@@ -776,10 +776,12 @@ class DPlayer {
                         mpeg2toh264Player.addEventListener('progress', updateProgress);
                         mpeg2toh264Player.addEventListener('workers', updateWorkers);
 
-                        // Keep the existing two-choice UI available for a second PID or dual-mono sub channel
+                        // Keep the existing two-choice UI available for a second PID or dual-mono sub channel.
+                        // The program map can leave a dual-mono stream unmarked by carrying no audio component
+                        // descriptor for it, while the frames being read still say it, so either one counts.
                         mpeg2toh264Player.addEventListener('audio', (event) => {
                             const audio = event.detail;
-                            if (audio.available.length >= 2 || audio.available[0]?.dualMono === true) {
+                            if (audio.available.length >= 2 || audio.available[0]?.dualMono === true || audio.dualMono) {
                                 this.container.classList.remove('dplayer-no-audio-switching');
                             } else {
                                 this.container.classList.add('dplayer-no-audio-switching');
