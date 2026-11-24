@@ -805,7 +805,14 @@ class DPlayer {
                                 this.options.pluginOptions.aribb24 = {};
                             }
                             this.options.pluginOptions.aribb24.enableAutoInBandMetadataTextTrackDetection = false;
-                            const aribb24Options = this.options.pluginOptions.aribb24;
+                            // In decode mode the element plays nothing itself and mpeg2toh264 answers its
+                            // currentTime, so the browser's own cue timing, which follows the element's media
+                            // clock, never moves: the renderer reads currentTime every frame instead.
+                            const aribb24Options = {
+                                ...this.options.pluginOptions.aribb24,
+                                useHighResTextTrack: true,
+                                useHighResTimeupdate: true,
+                            };
 
                             // Caption and superimpose share PES delivery while data_identifier selects their own payloads
                             const aribb24Caption = this.plugins.aribb24Caption = new aribb24js.CanvasRenderer(
